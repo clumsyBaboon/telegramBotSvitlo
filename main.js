@@ -65,12 +65,11 @@ bot.command("ping", async (ctx) => {
     }
     ctx.reply(`Перевіряю ${data}, timeout = 10s`);
    const ip = '188.190.241.163';
-    const url = `https://ping.online-api.com/ping?host=${ip}`; // пример API, нужно найти подходящее
+    const url = `https://api.hackertarget.com/nping/?q=${ip}`;
 
     const res = await fetch(url);
-    const data1 = await res.json();
-
-    console.log(data1);
+    const text = await res.text();
+    ctx.reply(text);
 })
 
 bot.launch({
