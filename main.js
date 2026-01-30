@@ -66,26 +66,39 @@ bot.command("ping", async (ctx) => {
     ctx.reply(`Перевіряю ${ip}, timeout = 10s`);
 
     //
-    const startRes = await fetch(`https://check-host.net/check-ping?host=${data}&max_nodes=1`);
-    const startData = await startRes.json();
+    try {
+        // Шаг 1: отправляем запрос на пинг
+        const startRes = await fetch(`https://check-host.net/check-ping?host=${ip}&max_nodes=1`);
+        const startData = await startRes.json();
 
-    const requestId = startData.request_id;
-    if (!requestId) return ctx.reply("Ресурс check-host.net недоступний");
+        const requestId = startData.request_id;
+        if (!requestId) return ctx.reply("Ресурс check-host.net недоступний");
 
-    let result;
-    await new Promise(r => setTimeout(r, 10000));
-    const res = await fetch(`https://check-host.net/check-result/${requestId}`);
-    const data = await res.json();
+        // Шаг 2: ждём результат (проверяем каждые 2 секунды, максимум 10 секунд)
+        let result = null;
+        for (let i = 0; i < 5; i++) {
+            await new Promise(r => setTimeout(r, 2000)); // ждём 2 секунды
+            const res = await fetch(`https://check-host.net/check-result/${requestId}`);
+            const json = await res.json();
+            if (json && Object.keys(json).length > 0) {
+                result = json;
+                break;
+            }
+        }
 
-    if (data && Object.keys(data).length > 0) result = data;
+        if (!result) return ctx.reply("false");
 
-    if (!result) return ctx.reply("false");
+        // Шаг 3: проверяем статус
+        const nodeResults = Object.values(result)[0]; // первый узел
+        const status = nodeResults[0]; // первый результат пинга
 
-    const nodeResults = Object.values(result)[0];
-    const status = nodeResults[0];
+        if (status !== null) ctx.reply("true");
+        else ctx.reply("false");
 
-    if (status !== null) ctx.reply("true");
-    else ctx.reply("false");
+    } catch (err) {
+        console.error(err);
+        ctx.reply("Помилка при виконанні пінгу");
+    }
 })
 
 bot.launch({
