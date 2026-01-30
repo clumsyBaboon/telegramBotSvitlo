@@ -1,10 +1,11 @@
 const { Telegraf } = require("telegraf");
 const admin = require("firebase-admin");
-let isReachable;
-(async () => {
-    const mod = await import('is-reachable');
-    isReachable = mod.default;
-})();
+const net = require("net");
+// let isReachable;
+// (async () => {
+//     const mod = await import('is-reachable');
+//     isReachable = mod.default;
+// })();
 
 const serviceAccount = JSON.parse(process.env.FIREBASE_KEY)
 
@@ -63,9 +64,21 @@ bot.command("ping", async (ctx) => {
         ctx.reply("Firebase не доступній")
     }
     ctx.reply(`Перевіряю ${data}, timeout = 10s`);
-    const reacheble = await isReachable(data);
-    if (reacheble) ctx.reply("Сервер онлайн!");
-    else ctx.reply("Сервер наразі офлайн!")    
+    const [host, portStr] = data.split(":");
+    const port = portStr ? parseInt(portStr) : 80;
+
+    const alive = await new Promise((resolve) => {
+        const socket = new net.Socket();
+        socket.setTimeout(10000); // 10 секунд
+
+        socket.once('connect', () => { socket.destroy(); resolve(true); });
+        socket.once('timeout', () => { socket.destroy(); resolve(false); });
+        socket.once('error', () => resolve(false));
+
+        socket.connect(port, host);
+    });
+
+    ctx.reply(alive ? "💡 Сервер онлайн!" : "❌ Сервер наразі офлайн!");   
 })
 
 bot.launch({
