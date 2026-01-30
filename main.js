@@ -97,7 +97,7 @@ bot.command("ping", async (ctx) => {
 
     } catch (err) {
         console.error(err);
-        ctx.reply("Помилка при виконанні пінгу");
+        ctx.reply(`Помилка при виконанні пінгу ${err}`);
     }
 })
 
