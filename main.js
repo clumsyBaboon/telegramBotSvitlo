@@ -64,12 +64,13 @@ bot.command("ping", async (ctx) => {
         ctx.reply("Firebase не доступній")
     }
     ctx.reply(`Перевіряю ${data}, timeout = 10s`);
-   try {
-    const res = await fetch('http://188.190.241.163:80', { timeout: 3000 });
-    if (res.ok) console.log('Сервер онлайн');
-    } catch (err) {
-    console.log('Сервер недоступен', err.message);
-    }
+   const ip = '188.190.241.163';
+    const url = `https://ping.online-api.com/ping?host=${ip}`; // пример API, нужно найти подходящее
+
+    const res = await fetch(url);
+    const data1 = await res.json();
+
+    console.log(data1);
 })
 
 bot.launch({
