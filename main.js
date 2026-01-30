@@ -34,7 +34,6 @@ bot.command("set", async (ctx) => {
 })
 
 bot.command("get", async (ctx) => {
-    console.log("get");
     const userID = String(ctx.from.id);
 
     try {
@@ -52,7 +51,6 @@ bot.command("get", async (ctx) => {
 bot.command("ping", async (ctx) => {
     const userID = String(ctx.from.id);
     let data;
-    console.log("ping");
     try {
         const doc = await userRef.doc(userID).get();
         if (!doc.exists) return ctx.reply("У вас ще немає звереженного host, /set для збереження");
