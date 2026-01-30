@@ -1,6 +1,10 @@
 const { Telegraf } = require("telegraf");
 const admin = require("firebase-admin");
-const isReachable = require("is-reachable");
+let isReachable;
+(async () => {
+    const mod = await import('is-reachable');
+    isReachable = mod.default;
+})();
 
 const serviceAccount = JSON.parse(process.env.FIREBASE_KEY)
 
@@ -59,7 +63,7 @@ bot.command("ping", async (ctx) => {
         ctx.reply("Firebase не доступній")
     }
     ctx.reply(`Перевіряю ${data}, timeout = 10s`);
-    const reacheble = isReachable(data);
+    const reacheble = await isReachable(data);
     if (reacheble) ctx.reply("Сервер онлайн!");
     else ctx.reply("Сервер наразі офлайн!")    
 })
