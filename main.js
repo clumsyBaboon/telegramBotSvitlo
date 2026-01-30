@@ -23,7 +23,7 @@ bot.command("set", async (ctx) => {
 
     try {
         await userRef.doc(userID).set({
-            data = text
+            data: text
         }, { merge: true })
 
         ctx.reply("Данные сохранены!")
