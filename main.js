@@ -34,6 +34,7 @@ bot.command("set", async (ctx) => {
 })
 
 bot.command("get", async (ctx) => {
+    console.log("get");
     const userID = String(ctx.from.id);
 
     try {
@@ -51,7 +52,7 @@ bot.command("get", async (ctx) => {
 bot.command("ping", async (ctx) => {
     const userID = String(ctx.frome.id);
     let data;
-    ctx.reply(`Перевіряю ${data}, timeout = 10s`);
+    console.log("ping");
     try {
         const doc = await userRef.doc(userID).get();
         if (!doc.exists) return ctx.reply("У вас ще немає звереженного host, /set для збереження");
@@ -59,6 +60,7 @@ bot.command("ping", async (ctx) => {
     } catch (err) {
         ctx.reply("Firebase не доступній")
     }
+    ctx.reply(`Перевіряю ${data}, timeout = 10s`);
     try {
         const res = await ping.promise.probe(data, { timeout: 10 });
         ctx.reply(res.alive ? `Сервер онлайн. (відгук: ${res.time}мс)` : `Сервер наразі офлайн (timeout = 10s)`);
