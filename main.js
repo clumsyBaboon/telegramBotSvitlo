@@ -64,21 +64,12 @@ bot.command("ping", async (ctx) => {
         ctx.reply("Firebase не доступній")
     }
     ctx.reply(`Перевіряю ${data}, timeout = 10s`);
-    const [host, portStr] = data.split(":");
-    const port = portStr ? parseInt(portStr) : 80;
-
-    const alive = await new Promise((resolve) => {
-        const socket = new net.Socket();
-        socket.setTimeout(10000); // 10 секунд
-
-        socket.once('connect', () => { socket.destroy(); resolve(true); });
-        socket.once('timeout', () => { socket.destroy(); resolve(false); });
-        socket.once('error', () => resolve(false));
-
-        socket.connect(port, host);
-    });
-
-    ctx.reply(alive ? "💡 Сервер онлайн!" : "❌ Сервер наразі офлайн!");   
+   try {
+    const res = await fetch('http://188.190.241.163:80', { timeout: 3000 });
+    if (res.ok) console.log('Сервер онлайн');
+    } catch (err) {
+    console.log('Сервер недоступен', err.message);
+    }
 })
 
 bot.launch({
