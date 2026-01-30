@@ -50,7 +50,7 @@ bot.command("get", async (ctx) => {
 })
 
 bot.command("ping", async (ctx) => {
-    const userID = String(ctx.frome.id);
+    const userID = String(ctx.from.id);
     let data;
     console.log("ping");
     try {
