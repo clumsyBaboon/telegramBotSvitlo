@@ -41,7 +41,7 @@ bot.command("get", async (ctx) => {
         if (!doc.exists) return ctx.reply("У вас еще нет сохраненных данных");
 
         const data = doc.data();
-        ctx.reply(`Ваши данные ${data}`);
+        ctx.reply(`Ваши данные ${data.data}`);
     } catch (err) {
         ctx.reply("Не удалось получить данные!");
     }
