@@ -55,21 +55,37 @@ bot.command("get", async (ctx) => {
 
 bot.command("ping", async (ctx) => {
     const userID = String(ctx.from.id);
-    let data;
+    let ip;
     try {
         const doc = await userRef.doc(userID).get();
         if (!doc.exists) return ctx.reply("У вас ще немає звереженного host, /set для збереження");
-        data = doc.data().data;
+        ip = doc.data().data;
     } catch (err) {
         ctx.reply("Firebase не доступній")
     }
-    ctx.reply(`Перевіряю ${data}, timeout = 10s`);
-   const ip = '188.190.241.163';
-    const url = `https://api.hackertarget.com/nping/?q=${ip}`;
+    ctx.reply(`Перевіряю ${ip}, timeout = 10s`);
 
-    const res = await fetch(url);
-    const text = await res.text();
-    ctx.reply(text);
+    //
+    const startRes = await fetch(`https://check-host.net/check-ping?host=${data}&max_nodes=1`);
+    const startData = await startRes.json();
+
+    const requestId = startData.request_id;
+    if (!requestId) return ctx.reply("Ресурс check-host.net недоступний");
+
+    let result;
+    await new Promise(r => setTimeout(r, 10000));
+    const res = await fetch(`https://check-host.net/check-result/${requestId}`);
+    const data = await res.json();
+
+    if (data && Object.keys(data).length > 0) result = data;
+
+    if (!result) return ctx.reply("false");
+
+    const nodeResults = Object.values(result)[0];
+    const status = nodeResults[0];
+
+    if (status !== null) ctx.reply("true");
+    else ctx.reply("false");
 })
 
 bot.launch({
