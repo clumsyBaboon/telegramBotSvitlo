@@ -2,7 +2,6 @@ const { Telegraf } = require("telegraf");
 const admin = require("firebase-admin");
 const net = require("net");
 const express = require("express");
-const net = require("net");
 // let isReachable;
 // (async () => {
 //     const mod = await import('is-reachable');
