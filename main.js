@@ -106,14 +106,22 @@ bot.command("ping", async (ctx) => {
     }
 })
 
-bot.launch({
-    webhook: {
-        domain: WEBHOOK_URL,
-        port: PORT
-    }
+// bot.launch({
+//     webhook: {
+//         domain: WEBHOOK_URL,
+//         port: PORT
+//     }
+// })
+// .then(() => console.log("Server has started!"))
+// .catch(err => console.error(`Err ${err}`));
+
+app.use(bot.webhookCallback("/telegram"));
+
+app.listen(PORT, () => {
+    bot.telegram.setWebhook(`${WEBHOOK_URL}/telegram`)
+    .then(() => console.log("Server has started!"))
+    .catch(err => console.error(`Err ${err}`))
 })
-.then(() => console.log("Server has started!"))
-.catch((err) => console.error(`Err ${err}`));
 
 process.once("SIGINT", () => bot.stop("SIGINT"));
 process.once("SIGTERM", () => bot.stop("SIGTERM"));
