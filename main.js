@@ -71,7 +71,7 @@ bot.command("ping", async (ctx) => {
     ctx.reply(`Перевіряю ${ip}, timeout = 10s`);
 
     //
-    const port = 53;
+    const port = 443;
     try {
         const socket = new net.Socket();
     const timeout = 2000; // 2 секунды на ожидание
