@@ -1,11 +1,16 @@
 const { Telegraf } = require("telegraf");
 const admin = require("firebase-admin");
+const express = require("express");
 const net = require("net");
-// let isReachable; 
+// let isReachable;
 // (async () => {
 //     const mod = await import('is-reachable');
 //     isReachable = mod.default;
 // })();
+
+const app = express();
+
+app.get("/update", (req, res) => res.send("Bot active!"));
 
 const serviceAccount = JSON.parse(process.env.FIREBASE_KEY)
 
