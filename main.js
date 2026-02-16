@@ -2,13 +2,6 @@ const { Telegraf } = require("telegraf");
 const admin = require("firebase-admin");
 const net = require("net");
 const express = require("express");
-
-// let isReachable;
-// (async () => {
-//     const mod = await import('is-reachable');
-//     isReachable = mod.default;
-// })();
-
 const app = express();
 
 app.get("/update", (req, res) => res.send("Bot active!"));
@@ -59,28 +52,46 @@ bot.command("get", async (ctx) => {
 })
 
 bot.command("ping", async (ctx) => {
+    const TIMEOUT = 5000;
+
     const userID = String(ctx.from.id);
     let ip;
     try {
         const doc = await userRef.doc(userID).get();
         if (!doc.exists) return ctx.reply("У вас ще немає звереженного host, /set для збереження");
-        ip = doc.data().data;
+        hostData = doc.data().data.split(':');
+        ip = hostData[0];
+        port = hostData[1];
     } catch (err) {
         ctx.reply("Firebase не доступній")
     }
-    ctx.reply(`Перевіряю ${ip}, timeout = 10s`);
+    ctx.reply(`Перевіряю ${ip}, порт ${port}, тайм-аут = ${TIMEOUT / 1000}s`);
 
-
+    // ctx.reply(`Результат ${await ping()}`)
 })
 
-// bot.launch({
-//     webhook: {
-//         domain: WEBHOOK_URL,
-//         port: PORT
-//     }
-// })
-// .then(() => console.log("Server has started!"))
-// .catch(err => console.error(`Err ${err}`));
+async function ping(ip, port, timeout) {
+    return new Promise(resolve => {
+        const client = new net.Socket();
+        client.setTimeout(timeout);
+        client.connect(port, ip, () => {client.write("PING")});
+        
+        client.on('data', data => {
+            if (String(data).trim() == "PONG") resolve("online");
+            client.destroy();
+        })
+
+        client.on('error', err => {
+            resolve("offline");
+            client.destroy();
+        })
+
+        client.on('timeout', () => {
+            resolve("offline");
+            client.destroy();
+        })
+    })
+}
 
 app.use(bot.webhookCallback("/telegram"));
 
