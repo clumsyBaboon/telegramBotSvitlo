@@ -70,7 +70,7 @@ bot.command("ping", async (ctx) => {
 
     if (ip == undefined || port == undefined) return ctx.reply("Ви не вказали ip або порт!");
 
-    ctx.reply(`Результат ${await ping(ip, port, TIMEOUT)}`)
+    ctx.reply( ((await ping(ip, port, TIMEOUT)) == "online") ? "✅Сервер оналйн" : "❌Сервер офлайн");
 })
 
 async function ping(ip, port, timeout) {
