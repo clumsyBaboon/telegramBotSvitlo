@@ -9,10 +9,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-<<<<<<< HEAD
-=======
     "express": "^5.2.1",
->>>>>>> d209ee4f6a88aca116e0c0f8b6d776c61a018e49
     "firebase-admin": "^13.6.0",
     "telegraf": "^4.16.3"
   }
