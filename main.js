@@ -1,12 +1,23 @@
 const { Telegraf } = require("telegraf");
 const admin = require("firebase-admin");
 const net = require("net");
+<<<<<<< HEAD
+=======
+const express = require("express");
+>>>>>>> d209ee4f6a88aca116e0c0f8b6d776c61a018e49
 // let isReachable;
 // (async () => {
 //     const mod = await import('is-reachable');
 //     isReachable = mod.default;
 // })();
 
+<<<<<<< HEAD
+=======
+const app = express();
+
+app.get("/update", (req, res) => res.send("Bot active!"));
+
+>>>>>>> d209ee4f6a88aca116e0c0f8b6d776c61a018e49
 const serviceAccount = JSON.parse(process.env.FIREBASE_KEY)
 
 admin.initializeApp({ credential: admin.credential.cert(serviceAccount) })
@@ -66,6 +77,7 @@ bot.command("ping", async (ctx) => {
     ctx.reply(`Перевіряю ${ip}, timeout = 10s`);
 
     //
+<<<<<<< HEAD
     try {
         // Шаг 1: отправляем запрос на пинг
         const startRes = await fetch(`https://check-host.net/check-ping?host=${ip}&max_nodes=1`);
@@ -95,12 +107,46 @@ bot.command("ping", async (ctx) => {
         if (status !== null) ctx.reply("true");
         else ctx.reply("false");
 
+=======
+    const port = 8180;
+    try {
+        const socket = new net.Socket();
+    const timeout = 2000; // 2 секунды на ожидание
+
+    socket.setTimeout(timeout);
+
+    // Успешное подключение
+    socket.on('connect', () => {
+        console.log(`[SUCCESS] Роутер (${ip}) доступен!`);
+        socket.destroy();
+    });
+
+    // Обработка ошибок
+    socket.on('error', (err) => {
+        if (err.code === 'ECONNREFUSED') {
+            // Если порт закрыт, но роутер ответил отказом — он работает!
+            console.log(`[SUCCESS] Роутер (${ip}) онлайн (порт закрыт, но устройство отвечает).`);
+        } else {
+            console.log(`[ERROR] Роутер (${ip}) недоступен. Код: ${err.code}`);
+        }
+        socket.destroy();
+    });
+
+    // Тайм-аут (роутер молчит)
+    socket.on('timeout', () => {
+        console.log(`[ERROR] Ошибка: Роутер (${ip}) не ответил за ${timeout}мс.`);
+        socket.destroy();
+    });
+
+    socket.connect(port, ip);
+>>>>>>> d209ee4f6a88aca116e0c0f8b6d776c61a018e49
     } catch (err) {
         console.error(err);
         ctx.reply(`Помилка при виконанні пінгу ${err}`);
     }
 })
 
+<<<<<<< HEAD
 bot.launch({
     webhook: {
         domain: WEBHOOK_URL,
@@ -109,6 +155,24 @@ bot.launch({
 })
 .then(() => console.log("Server has started!"))
 .catch((err) => console.error(`Err ${err}`));
+=======
+// bot.launch({
+//     webhook: {
+//         domain: WEBHOOK_URL,
+//         port: PORT
+//     }
+// })
+// .then(() => console.log("Server has started!"))
+// .catch(err => console.error(`Err ${err}`));
+
+app.use(bot.webhookCallback("/telegram"));
+
+app.listen(PORT, () => {
+    bot.telegram.setWebhook(`${WEBHOOK_URL}/telegram`)
+    .then(() => console.log("Server has started!"))
+    .catch(err => console.error(`Err ${err}`))
+})
+>>>>>>> d209ee4f6a88aca116e0c0f8b6d776c61a018e49
 
 process.once("SIGINT", () => bot.stop("SIGINT"));
 process.once("SIGTERM", () => bot.stop("SIGTERM"));
