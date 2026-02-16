@@ -83,12 +83,10 @@ async function ping(ip, port, timeout) {
             if (String(data).trim() == "PONG") resolve("online");
             client.destroy();
         })
-
         client.on('error', err => {
             resolve("offline");
             client.destroy();
         })
-
         client.on('timeout', () => {
             resolve("offline");
             client.destroy();
