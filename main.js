@@ -56,6 +56,7 @@ bot.command("ping", async (ctx) => {
 
     const userID = String(ctx.from.id);
     let ip;
+    let port;
     try {
         const doc = await userRef.doc(userID).get();
         if (!doc.exists) return ctx.reply("У вас ще немає звереженного host, /set для збереження");
@@ -65,9 +66,11 @@ bot.command("ping", async (ctx) => {
     } catch (err) {
         ctx.reply("Firebase не доступній")
     }
-    ctx.reply(`Перевіряю ${ip}, порт ${port}, тайм-аут = ${TIMEOUT / 1000}s`);
+    ctx.reply(`Перевіряю\n Айпі: ${ip}\n Порт: ${port}\n Тайм-аут: ${TIMEOUT / 1000}s`);
 
-    // ctx.reply(`Результат ${await ping()}`)
+    if (ip == undefined || port == undefined) return ctx.reply("Ви не вказали ip або порт!");
+
+    ctx.reply(`Результат ${await ping(ip, port, TIMEOUT)}`)
 })
 
 async function ping(ip, port, timeout) {
