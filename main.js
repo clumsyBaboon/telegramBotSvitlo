@@ -1,23 +1,17 @@
 const { Telegraf } = require("telegraf");
 const admin = require("firebase-admin");
 const net = require("net");
-<<<<<<< HEAD
-=======
 const express = require("express");
->>>>>>> d209ee4f6a88aca116e0c0f8b6d776c61a018e49
+
 // let isReachable;
 // (async () => {
 //     const mod = await import('is-reachable');
 //     isReachable = mod.default;
 // })();
 
-<<<<<<< HEAD
-=======
 const app = express();
 
 app.get("/update", (req, res) => res.send("Bot active!"));
-
->>>>>>> d209ee4f6a88aca116e0c0f8b6d776c61a018e49
 const serviceAccount = JSON.parse(process.env.FIREBASE_KEY)
 
 admin.initializeApp({ credential: admin.credential.cert(serviceAccount) })
@@ -76,86 +70,9 @@ bot.command("ping", async (ctx) => {
     }
     ctx.reply(`Перевіряю ${ip}, timeout = 10s`);
 
-    //
-<<<<<<< HEAD
-    try {
-        // Шаг 1: отправляем запрос на пинг
-        const startRes = await fetch(`https://check-host.net/check-ping?host=${ip}&max_nodes=1`);
-        const startData = await startRes.json();
 
-        const requestId = startData.request_id;
-        if (!requestId) return ctx.reply("Ресурс check-host.net недоступний");
-
-        // Шаг 2: ждём результат (проверяем каждые 2 секунды, максимум 10 секунд)
-        let result = null;
-        for (let i = 0; i < 5; i++) {
-            await new Promise(r => setTimeout(r, 2000)); // ждём 2 секунды
-            const res = await fetch(`https://check-host.net/check-result/${requestId}`);
-            const json = await res.json();
-            if (json && Object.keys(json).length > 0) {
-                result = json;
-                break;
-            }
-        }
-
-        if (!result) return ctx.reply("false");
-
-        // Шаг 3: проверяем статус
-        const nodeResults = Object.values(result)[0]; // первый узел
-        const status = nodeResults[0]; // первый результат пинга
-
-        if (status !== null) ctx.reply("true");
-        else ctx.reply("false");
-
-=======
-    const port = 8180;
-    try {
-        const socket = new net.Socket();
-    const timeout = 2000; // 2 секунды на ожидание
-
-    socket.setTimeout(timeout);
-
-    // Успешное подключение
-    socket.on('connect', () => {
-        console.log(`[SUCCESS] Роутер (${ip}) доступен!`);
-        socket.destroy();
-    });
-
-    // Обработка ошибок
-    socket.on('error', (err) => {
-        if (err.code === 'ECONNREFUSED') {
-            // Если порт закрыт, но роутер ответил отказом — он работает!
-            console.log(`[SUCCESS] Роутер (${ip}) онлайн (порт закрыт, но устройство отвечает).`);
-        } else {
-            console.log(`[ERROR] Роутер (${ip}) недоступен. Код: ${err.code}`);
-        }
-        socket.destroy();
-    });
-
-    // Тайм-аут (роутер молчит)
-    socket.on('timeout', () => {
-        console.log(`[ERROR] Ошибка: Роутер (${ip}) не ответил за ${timeout}мс.`);
-        socket.destroy();
-    });
-
-    socket.connect(port, ip);
->>>>>>> d209ee4f6a88aca116e0c0f8b6d776c61a018e49
-    } catch (err) {
-        console.error(err);
-        ctx.reply(`Помилка при виконанні пінгу ${err}`);
-    }
 })
 
-<<<<<<< HEAD
-bot.launch({
-    webhook: {
-        domain: WEBHOOK_URL,
-        port: PORT
-    }
-})
-.then(() => console.log("Server has started!"))
-.catch((err) => console.error(`Err ${err}`));
-=======
 // bot.launch({
 //     webhook: {
 //         domain: WEBHOOK_URL,
@@ -172,7 +89,6 @@ app.listen(PORT, () => {
     .then(() => console.log("Server has started!"))
     .catch(err => console.error(`Err ${err}`))
 })
->>>>>>> d209ee4f6a88aca116e0c0f8b6d776c61a018e49
 
 process.once("SIGINT", () => bot.stop("SIGINT"));
 process.once("SIGTERM", () => bot.stop("SIGTERM"));
