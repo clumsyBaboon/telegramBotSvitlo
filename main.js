@@ -1,5 +1,4 @@
 const { Telegraf } = require("telegraf");
-const admin = require("firebase-admin");
 const net = require("net");
 const express = require("express");
 const http = require("http");
@@ -12,95 +11,21 @@ app.get("/update", (req, res) => res.send("Bot active!"));
 app.get("/ping", (req, res) => {
     res.send("ok");
 })
-const serviceAccount = JSON.parse(process.env.FIREBASE_KEY)
 
-admin.initializeApp({ credential: admin.credential.cert(serviceAccount) })
-const db = admin.firestore();
-const userRef = db.collection("users");
-
-const TOKEN = process.env.BOT_TOKEN;
 const WEBHOOK_URL = process.env.RENDER_EXTERNAL_URL;
 const PORT = process.env.PORT || 3000;
 
 const bot = new Telegraf(TOKEN);
 
-bot.start((ctx) => ctx.reply("Bot started!"));
-
-// bot.command("set", async (ctx) => {
-//     const text = ctx.payload;
-//     if (!text) return ctx.reply("Пустая команда");
-
-//     const userID = String(ctx.from.id);
-
-//     try {
-//         await userRef.doc(userID).set({
-//             data: text
-//         }, { merge: true })
-
-//         ctx.reply("Host збережено!")
-//     } catch (err) {
-//         ctx.reply("Firebase не доступній")
-//     }
-// })
-
 bot.command("get", async (ctx) => {
     const userID = String(ctx.from.id);
-
-    // try {
-    //     const doc = await userRef.doc(userID).get();
-
-    //     if (!doc.exists) return ctx.reply("У вас ще немає звереженного host, /set для збереження");
-
-    //     const data = doc.data().data;
-    //     ctx.reply(`Ваш host ${data}`);
-    // } catch (err) {
-    //     ctx.reply("Firebase не доступній");
-    // }
-    ctx.reply(userID);
+    ctx.reply(`Твій UserID: ${userID}`);
 })
 
 bot.command("ping", async (ctx) => {
     const TIMEOUT = 5000;
 
-    const userID = String(ctx.from.id);
-    let ip;
-    let port;
-    try {
-        const doc = await userRef.doc(userID).get();
-        if (!doc.exists) return ctx.reply("У вас ще немає звереженного host, /set для збереження");
-        hostData = doc.data().data.split(':');
-        ip = hostData[0];
-        port = hostData[1];
-    } catch (err) {
-        ctx.reply("Firebase не доступній")
-    }
-    ctx.reply(`Перевіряю\n Айпі: ${ip}\n Порт: ${port}\n Тайм-аут: ${TIMEOUT / 1000}s`);
-
-    if (ip == undefined || port == undefined) return ctx.reply("Ви не вказали ip або порт!");
-
-    ctx.reply( ((await ping(ip, port, TIMEOUT)) == "online") ? "✅Сервер оналйн" : "❌Сервер офлайн");
 })
-
-async function ping(ip, port, timeout) {
-    return new Promise(resolve => {
-        const client = new net.Socket();
-        client.setTimeout(timeout);
-        client.connect(port, ip, () => {client.write("PING")});
-        
-        client.on('data', data => {
-            if (String(data).trim() == "PONG") resolve("online");
-            client.destroy();
-        })
-        client.on('error', err => {
-            resolve("offline");
-            client.destroy();
-        })
-        client.on('timeout', () => {
-            resolve("offline");
-            client.destroy();
-        })
-    })
-}
 
 app.use(bot.webhookCallback("/telegram"));
 
