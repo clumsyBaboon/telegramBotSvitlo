@@ -14,6 +14,7 @@ app.get("/ping", (req, res) => {
     devices.set("deviceID", body);
 })
 
+const TOKEN = process.env.BOT_TOKEN;
 const WEBHOOK_URL = process.env.RENDER_EXTERNAL_URL;
 const PORT = process.env.PORT || 3000;
 
