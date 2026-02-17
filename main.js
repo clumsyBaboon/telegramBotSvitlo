@@ -50,7 +50,7 @@ bot.command("ping", async (ctx) => {
     const TIMEOUT = 5000;
     const userID = String(ctx.from.id);
     
-    ctx.reply(`⌛Перевіряю\n UserID: <code>${userID}</code>`)
+    ctx.replyWithHTML(`⌛Перевіряю\n UserID: <code>${userID}</code>`)
 
     const docRef = userRef.doc(userID);
     const snap = await docRef.get();
