@@ -6,7 +6,17 @@ const http = require("http");
 
 const app = express();
 
-app.get("/update", (req, res) => res.send("Bot active!"));
+app.get("/update", async (req, res) => {
+    res.send("Bot active!");
+    // 5 * 60 * 1000
+    const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000);
+
+    const snapshot = await userRef.where("lastUpdated", "<", fiveMinAgo).get();
+
+    if (snapshot.empty) return
+    
+    console.log(snapshot);
+});
 app.get("/ping", async (req, res) => {
     res.send("ok");
     const data = req.query.device_id;
