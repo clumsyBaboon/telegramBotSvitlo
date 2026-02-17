@@ -15,7 +15,7 @@ app.get("/update", async (req, res) => {
 
     const snapshot = await userRef.where("lastUpdated", "<", fiveMinAgo).get();
 
-    if (snapshot.empty) return
+    if (snapshot.empty) return console.log("Пусто");
     
     console.log(snapshot);
 });
@@ -50,6 +50,18 @@ bot.command("get", async (ctx) => {
 
 bot.command("ping", async (ctx) => {
     const TIMEOUT = 5000;
+    const userID = String(ctx.from.id);
+    
+    ctx.reply(`⌛Перевіряю\n UserID: ${userID}`)
+
+    const docRef = userRef.doc(userID);
+    const snap = await docRef.get();
+
+    if (snap.exists) {
+        ctx.reply("✅Онлайн");
+    } else {
+        ctx.reply("❌Офлайн");
+    }
 })
 
 app.use(bot.webhookCallback("/telegram"));
