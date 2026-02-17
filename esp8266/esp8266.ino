@@ -1,6 +1,7 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266HTTPClient.h>
+#include <WiFiClientSecure.h>
 #include <LittleFS.h>
 
 #define BTN_PIN 4
@@ -90,6 +91,7 @@ void connectWiFi(const char* ssid, const char* password) {
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
+    if (millis() > 100000) ESP.reset();
   }
 
   Serial.println("\nConnected!");
@@ -99,7 +101,7 @@ void connectWiFi(const char* ssid, const char* password) {
 
 void loop() {
   static uint32_t lastPing = 0;
-  static const uint32_t pingInterval = 30000;
+  static const uint32_t pingInterval = 15000;
 
   uint32_t now = millis();
   if (now - lastPing > pingInterval) {
@@ -107,11 +109,12 @@ void loop() {
 
     if (WiFi.status() == WL_CONNECTED) {
       HTTPClient http;
-      WiFiClient client;
-
+      WiFiClientSecure client;
+      client.setInsecure();
       String fullURL = serverUrl + "?device_id=" + _device;
       
       if (http.begin(client, fullURL)) {
+        http.addHeader("User-Agent", "ESP8266");
         uint16_t httpCode = http.GET();
 
         if (httpCode > 0) {

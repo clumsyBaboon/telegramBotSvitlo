@@ -6,6 +6,8 @@ const http = require("http");
 
 const app = express();
 
+const devices = new Map();
+
 app.get("/update", (req, res) => res.send("Bot active!"));
 app.get("/ping", (req, res) => {
     res.send("ok");
@@ -24,36 +26,37 @@ const bot = new Telegraf(TOKEN);
 
 bot.start((ctx) => ctx.reply("Bot started!"));
 
-bot.command("set", async (ctx) => {
-    const text = ctx.payload;
-    if (!text) return ctx.reply("Пустая команда");
+// bot.command("set", async (ctx) => {
+//     const text = ctx.payload;
+//     if (!text) return ctx.reply("Пустая команда");
 
-    const userID = String(ctx.from.id);
+//     const userID = String(ctx.from.id);
 
-    try {
-        await userRef.doc(userID).set({
-            data: text
-        }, { merge: true })
+//     try {
+//         await userRef.doc(userID).set({
+//             data: text
+//         }, { merge: true })
 
-        ctx.reply("Host збережено!")
-    } catch (err) {
-        ctx.reply("Firebase не доступній")
-    }
-})
+//         ctx.reply("Host збережено!")
+//     } catch (err) {
+//         ctx.reply("Firebase не доступній")
+//     }
+// })
 
 bot.command("get", async (ctx) => {
     const userID = String(ctx.from.id);
 
-    try {
-        const doc = await userRef.doc(userID).get();
+    // try {
+    //     const doc = await userRef.doc(userID).get();
 
-        if (!doc.exists) return ctx.reply("У вас ще немає звереженного host, /set для збереження");
+    //     if (!doc.exists) return ctx.reply("У вас ще немає звереженного host, /set для збереження");
 
-        const data = doc.data().data;
-        ctx.reply(`Ваш host ${data}`);
-    } catch (err) {
-        ctx.reply("Firebase не доступній");
-    }
+    //     const data = doc.data().data;
+    //     ctx.reply(`Ваш host ${data}`);
+    // } catch (err) {
+    //     ctx.reply("Firebase не доступній");
+    // }
+    ctx.reply(userID);
 })
 
 bot.command("ping", async (ctx) => {
