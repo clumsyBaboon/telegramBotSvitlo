@@ -12,7 +12,7 @@ app.get("/ping", async (req, res) => {
     const data = req.query.device_id;
     if (!data || data == null) return
     try {
-        await userRef.doc(device_id).set({
+        await userRef.doc(data).set({
             lastUpdated: Date.now()
         }, { merge: true })
     } catch (err) {
