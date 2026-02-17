@@ -14,9 +14,8 @@ app.get("/update", async (req, res) => {
 
     const snapshot = await userRef.where("lastUpdated", "<", Date.now() - 5 * 60 * 1000).get();
 
-    if (snapshot.empty) return console.log("Пусто");
-    
-    console.log(snapshot);
+    if (snapshot.empty) return
+    for (const doc of snapshot.docs) await doc.ref.delete();
 });
 app.get("/ping", async (req, res) => {
     res.send("ok");
