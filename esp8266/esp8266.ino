@@ -7,7 +7,7 @@
 #define LED_PIN 5
 
 String _ssid, _pass, _device;
-const char* serverUrl = "https://telegrambotsvitlo.onrender.com/ping";
+const String serverUrl = "https://telegrambotsvitlo.onrender.com/ping";
 bool isPassOkay = false;
 
 ESP8266WebServer* server = nullptr;
@@ -108,16 +108,23 @@ void loop() {
     if (WiFi.status() == WL_CONNECTED) {
       HTTPClient http;
       WiFiClient client;
-      http.begin(client, serverUrl);
-      http.addHeader("Content-Type", "application/json");
 
-      String payload = "{\"device_id\":\"" + _device + "\"}";
-      uint16_t httpResponseCode = http.POST(payload);
+      String fullURL = serverUrl + "?device_id=" + _device;
+      
+      if (http.begin(client, fullURL)) {
+        uint16_t httpCode = http.GET();
 
-      if (httpResponseCode > 0) Serial.println("Ping sent: " + String(httpResponseCode));
-      else Serial.println("Error sending ping: " + http.errorToString(httpResponseCode));
+        if (httpCode > 0) {
+          Serial.println("[HTTP] GET... code: " + String(httpCode));
+          if (httpCode == HTTP_CODE_OK) {
+            String payload = http.getString();
+            Serial.print("Response: ");
+            Serial.println(payload);
+          }
+        } else Serial.println("[HTTP] GET... failed");
 
-      http.end();
+        http.end();
+      }
     } else Serial.println("WiFi not connected!");
   }
 }

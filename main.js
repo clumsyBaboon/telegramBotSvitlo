@@ -8,12 +8,7 @@ const app = express();
 
 app.get("/update", (req, res) => res.send("Bot active!"));
 app.get("/ping", (req, res) => {
-    console.log("BODY: " + req.body);
-
-    const { device_id } = req.body;
-
-    console.log("DEVICE_ID: " + device_id);
-    res.send({ status: "ok" });
+    res.send("ok");
 })
 const serviceAccount = JSON.parse(process.env.FIREBASE_KEY)
 
