@@ -10,8 +10,8 @@ const devices = new Map();
 app.get("/update", (req, res) => res.send("Bot active!"));
 app.get("/ping", (req, res) => {
     res.send("ok");
-    console.log(req.body);
-    devices.set("deviceID", req.body);
+    console.log(req.query.device_id);
+    devices.set("deviceID", req.query.device_id);
 })
 
 const TOKEN = process.env.BOT_TOKEN;
