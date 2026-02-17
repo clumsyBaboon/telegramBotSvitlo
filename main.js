@@ -9,11 +9,10 @@ const app = express();
 app.get("/update", async (req, res) => {
     res.send("Bot active!");
     // 5 * 60 * 1000
-    const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000);
 
     console.log("CHECKING");
 
-    const snapshot = await userRef.where("lastUpdated", "<", fiveMinAgo).get();
+    const snapshot = await userRef.where("lastUpdated", "<", Date.now() - 5 * 60 * 1000).get();
 
     if (snapshot.empty) return console.log("Пусто");
     
