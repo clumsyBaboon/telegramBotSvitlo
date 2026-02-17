@@ -11,6 +11,8 @@ app.get("/update", async (req, res) => {
     // 5 * 60 * 1000
     const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000);
 
+    console.log("CHECKING");
+
     const snapshot = await userRef.where("lastUpdated", "<", fiveMinAgo).get();
 
     if (snapshot.empty) return
