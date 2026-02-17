@@ -10,6 +10,8 @@ const devices = new Map();
 app.get("/update", (req, res) => res.send("Bot active!"));
 app.get("/ping", (req, res) => {
     res.send("ok");
+    console.log(req.body);
+    devices.set("deviceID", body);
 })
 
 const WEBHOOK_URL = process.env.RENDER_EXTERNAL_URL;
@@ -24,7 +26,6 @@ bot.command("get", async (ctx) => {
 
 bot.command("ping", async (ctx) => {
     const TIMEOUT = 5000;
-
 })
 
 app.use(bot.webhookCallback("/telegram"));
