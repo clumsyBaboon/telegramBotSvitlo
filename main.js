@@ -3,7 +3,6 @@ const admin = require("firebase-admin");
 const net = require("net");
 const express = require("express");
 const http = require("http");
-const WebSocket = require("ws");
 const { message } = require("telegraf/filters");
 
 const app = express();
@@ -22,36 +21,6 @@ const PORT = process.env.PORT || 3000;
 const bot = new Telegraf(TOKEN);
 
 bot.start((ctx) => ctx.reply("Bot started!"));
-
-// WEBSOCKET
-
-const server = http.createServer(app);
-const wss = new WebSocket.Server({ server });
-
-const devices = new Map();
-
-wss.on('connection', ws => {
-    console.log("New esp8266");
-    
-    ws.on('message', message => {
-        try {
-            const data = JSON.parse(message);
-
-            // connect device
-            // ws.device_id = id
-            // devices.set(deviceID, ws);
-        } catch (err) {
-            console.log("Invalid message from ESP");
-        }
-    })
-
-    ws.on('close', () => {
-        if (ws.devices) {
-            devices.delete(ws.device_id);
-            console.log("Disconnect");
-        }
-    })
-})
 
 bot.command("set", async (ctx) => {
     const text = ctx.payload;

@@ -1,19 +1,14 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
+#include <ESP8266HTTPClient.h>
 #include <LittleFS.h>
-#include <WebSocketsClient.h>
-#include <ArduinoJson.h>
 
 #define BTN_PIN 4
 #define LED_PIN 5
 
 String _ssid, _pass, _device;
+const char* serverUrl = "https://telegrambotsvitlo.onrender.com/ping";
 bool isPassOkay = false;
-
-const char* ws_host = "telegrambotsvitlo.onrender.com";
-const uint16_t ws_port = 443;
-
-WebSocketsClient webSocket;
 
 ESP8266WebServer* server = nullptr;
 
@@ -41,7 +36,7 @@ void runConfigMode() {
     html += "<form action='/save' method='POST'>";
     html += "WiFi SSID: <br><input type='text' name='ssid'><br><br>";
     html += "WiFi Password: <br><input type='text' name='pass'><br><br>";
-    html += "Device ID: <br><input type='number' name='device'><br><br>";
+    html += "Device ID: <br><input type='text' name='device'><br><br>";
     html += "<input type='submit' value='Save'></form>";
     server->send(200, "text/html", html);
   });
@@ -77,14 +72,10 @@ void runNormalMode() {
     _device.trim();
     file.close();
 
-    Serial.println("\n\nFile loaded! SSID: " + _ssid + " PASS: " + _pass + " DEVICE:" + _device);
+    Serial.println("\n\nFile loaded! SSID: " + _ssid + " PASS: " + _pass + " DEVICE: " + _device);
     if (_pass.length() >= 8 && _ssid != "") isPassOkay = true;
 
     connectWiFi(_ssid.c_str(), _pass.c_str());
-
-    webSocket.beginSSL(ws_host, ws_port, "/");
-    webSocket.onEvent(webSocketEvent);
-    webSocket.setReconnectInterval(5000);
   }
 }
 
@@ -106,25 +97,27 @@ void connectWiFi(const char* ssid, const char* password) {
   Serial.println(WiFi.localIP());
 }
 
-void webSocketEvent(WStype_t type, uint8_t* payload, size_t length) {
-  switch (type) {
-    case WStype_DISCONNECTED: Serial.println("Websocket disconnected"); break;
-    case WStype_CONNECTED: {
-      Serial.println("Websocket connected");
-      
-      StaticJsonDocument<200> doc;
-      doc["type"] = "register";
-      doc["device_id"] = _device;
-      char buffer[200];
-      serializeJson(doc, buffer);
-      webSocket.sendTXT(buffer);
-      break;
-    }
-    Serial.printf("Received: %s\n", payload);
-    default: break;
-  }
-}
-
 void loop() {
-  webSocket.loop();
+  static uint32_t lastPing = 0;
+  static const uint32_t pingInterval = 30000;
+
+  uint32_t now = millis();
+  if (now - lastPing > pingInterval) {
+    lastPing = now;
+
+    if (WiFi.status() == WL_CONNECTED) {
+      HTTPClient http;
+      WiFiClient client;
+      http.begin(client, serverUrl);
+      http.addHeader("Content-Type", "application/json");
+
+      String payload = "{\\'device_id\\':\\'" + _device + "\\'}";
+      uint8_t httpResponseCode = http.POST(payload);
+
+      if (httpResponseCode > 0) Serial.println("Ping sent: " + String(httpResponseCode));
+      else Serial.println("Error sending ping: " + http.errorToString(httpResponseCode));
+
+      http.end();
+    } else Serial.println("WiFi not connected!");
+  }
 }
