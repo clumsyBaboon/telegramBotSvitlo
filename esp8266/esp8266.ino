@@ -37,7 +37,7 @@ void runConfigMode() {
     html += "<form action='/save' method='POST'>";
     html += "WiFi SSID: <br><input type='text' name='ssid'><br><br>";
     html += "WiFi Password: <br><input type='text' name='pass'><br><br>";
-    html += "Device ID: <br><input type='text' name='device'><br><br>";
+    html += "Device ID: <br><input type='number' name='device'><br><br>";
     html += "<input type='submit' value='Save'></form>";
     server->send(200, "text/html", html);
   });
@@ -58,11 +58,15 @@ void runConfigMode() {
 
   while (true) {
     server->handleClient();
-    yield();
+    digitalWrite(LED_PIN, HIGH);
+    delay(20);
+    digitalWrite(LED_PIN, LOW);
+    delay(20);
   }
 }
 
 void runNormalMode() {
+  digitalWrite(LED_PIN, HIGH);
   if (LittleFS.exists("/wifi.txt")) {
     File file = LittleFS.open("/wifi.txt", "r");
     _ssid = file.readStringUntil('\n');
@@ -101,10 +105,11 @@ void connectWiFi(const char* ssid, const char* password) {
 
 void loop() {
   static uint32_t lastPing = 0;
-  static const uint32_t pingInterval = 15000;
+  static const uint32_t pingInterval = 30000;
 
   uint32_t now = millis();
   if (now - lastPing > pingInterval) {
+    digitalWrite(LED_PIN, LOW);
     lastPing = now;
 
     if (WiFi.status() == WL_CONNECTED) {
