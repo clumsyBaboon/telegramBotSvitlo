@@ -11,7 +11,7 @@ app.get("/update", (req, res) => res.send("Bot active!"));
 app.get("/ping", (req, res) => {
     res.send("ok");
     console.log(req.body);
-    devices.set("deviceID", body);
+    devices.set("deviceID", req.body);
 })
 
 const TOKEN = process.env.BOT_TOKEN;
