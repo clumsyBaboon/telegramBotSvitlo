@@ -111,8 +111,8 @@ void loop() {
       http.begin(client, serverUrl);
       http.addHeader("Content-Type", "application/json");
 
-      String payload = "{\\'device_id\\':\\'" + _device + "\\'}";
-      uint8_t httpResponseCode = http.POST(payload);
+      String payload = "{\"device_id\":\"" + _device + "\"}";
+      uint16_t httpResponseCode = http.POST(payload);
 
       if (httpResponseCode > 0) Serial.println("Ping sent: " + String(httpResponseCode));
       else Serial.println("Error sending ping: " + http.errorToString(httpResponseCode));
