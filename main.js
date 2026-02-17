@@ -3,11 +3,13 @@ const admin = require("firebase-admin");
 const net = require("net");
 const express = require("express");
 const http = require("http");
-const { message } = require("telegraf/filters");
 
 const app = express();
 
 app.get("/update", (req, res) => res.send("Bot active!"));
+app.get("/ping", (req, res) => {
+    res.status(200).send();
+})
 const serviceAccount = JSON.parse(process.env.FIREBASE_KEY)
 
 admin.initializeApp({ credential: admin.credential.cert(serviceAccount) })
